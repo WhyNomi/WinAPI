@@ -38,6 +38,14 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, 
 		NULL, NULL, hInstance, NULL
 	);
 
+	if (hwnd == NULL)
+	{
+		MessageBox(NULL, "Window not created", "Error", MB_OK | MB_ICONERROR);
+		return 0;
+	}
+	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
+
 	//3) Цикл сообщений: (Message loop)
 	
 }
