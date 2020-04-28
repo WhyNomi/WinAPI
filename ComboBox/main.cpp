@@ -69,7 +69,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 		case IDOK:
 		{
-			//MessageBox(hwnd, "Hello", "Hi", MB_OK);
+			///MessageBox(hwnd, "Hello", "Hi", MB_OK);
 			const int SIZE = 255;
 			CHAR buffer[SIZE]{};
 			CHAR message[SIZE] = "Вы ввели: ";
