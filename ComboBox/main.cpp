@@ -1,4 +1,5 @@
 #include<Windows.h>
+
 #include"resource.h"
 
 HWND hCombo;
@@ -55,20 +56,31 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (HIWORD(wParam) == CBN_SELENDOK)
 			{
-				const int SIZE = 255;
-				CHAR buffer[SIZE]{};
-				CHAR message[SIZE] = "Вы ввели: ";
-				int i = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
-				SendMessage(hCombo, CB_GETLBTEXT, i, (LPARAM)buffer);
+				/*	const int SIZE = 255;
+					CHAR buffer[SIZE]{};
+					CHAR message[SIZE] = "Вы ввели: ";
+					int i = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+					SendMessage(hCombo, CB_GETLBTEXT, i, (LPARAM)buffer);
 
-				strcat_s(message, SIZE, buffer);
-				MessageBox(hwnd, message, "Info", MB_OK | MB_ICONINFORMATION);
+					strcat_s(message, SIZE, buffer);
+					MessageBox(hwnd, message, "Info", MB_OK | MB_ICONINFORMATION);*/
 			}
 		}
 		break;
 		case IDOK:
-			MessageBox(hwnd, "Hello", "Hi", MB_OK);
-			break;
+		{
+			//MessageBox(hwnd, "Hello", "Hi", MB_OK);
+			const int SIZE = 255;
+			CHAR buffer[SIZE]{};
+			CHAR message[SIZE] = "Вы ввели: ";
+			int i = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+			SendMessage(hCombo, CB_GETLBTEXT, i, (LPARAM)buffer);
+
+			strcat_s(message, SIZE, buffer);
+			MessageBox(hwnd, message, "Info", MB_OK | MB_ICONINFORMATION);
+		}
+		break;
+
 		case IDCANCEL:
 			EndDialog(hwnd, 0);
 			break;
