@@ -1,4 +1,5 @@
 #include<Windows.h>
+#include"Resource.h"
 
 CONST CHAR SZ_CLASS_NAME[] = "MyWindowClass";
 
@@ -14,11 +15,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, 
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
-	wc.hIcon - LoadIcon(NULL, IDI_APPLICATION);
+	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
-	wc.lpszMenuName = NULL;
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOW+1;
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
 	wc.lpszClassName = SZ_CLASS_NAME;
 
 	if (!RegisterClassEx(&wc))
@@ -32,9 +33,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, 
 	(
 		WS_EX_CLIENTEDGE,
 		SZ_CLASS_NAME,
-		"THIS IS MY first WINDOW",
+		"THIS IS MY FIRST WINDOW",
 		WS_OVERLAPPEDWINDOW,
-		450, 200, 640, 480,
+		550, 200, 640, 480,
 		NULL, NULL, hInstance, NULL
 	);
 
@@ -47,7 +48,13 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, 
 	UpdateWindow(hwnd);
 
 	//3) Цикл сообщений: (Message loop)
-	
+	MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0) > 0)
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	return msg.wParam;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -57,13 +64,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		
 		break;
+	case WM_COMMAND:
+	{
+		switch (uMsg)
+		{
+			//Реализовать диалоговые окна.
+		}
+		break;
+	}
 	case WM_CLOSE:
-		DestroyWindow(hwnd);
+		if (MessageBox(hwnd, "Вы действительно хотите закрыть окно?", "А шо так?", MB_YESNO | MB_ICONQUESTION) == IDYES)
+		{
+			DestroyWindow(hwnd);
+		}
+	/*else
+		{
+			MessageBox(hwnd,"Хорошо", "")
+		}*/
 		break;
 	case WM_DESTROY:
+		//MessageBox(hwnd, "Da", "Info", MB_OK);
 		PostQuitMessage(0);
 		break;
-	default:DefWindowProc(hwnd, uMsg, wParam, lParam);
+	default:return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
 	}
 	return 0;
 }
