@@ -1,7 +1,9 @@
 #include<Windows.h>
 #include"Resource.h"
 
+
 CONST CHAR SZ_CLASS_NAME[] = "MyWindowClass";
+CHAR szFileName[MAX_PATH]{};
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -9,6 +11,10 @@ LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName);
 BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName);
+
+VOID DoFileOpen(HWND hwnd);
+VOID DoFileSaveAS(HWND hwnd);
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, int nCmdShow)
 {
 	//1) Регистация класса окна:
@@ -110,47 +116,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_FILE_OPEN:
 		{
-			//----------------OPEN TXT FILE----------------// 
-			OPENFILENAME ofn;
-			CHAR szFileName[MAX_PATH]{};
-
-			ZeroMemory(&ofn, sizeof(ofn));
-
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hwnd;
-			ofn.lpstrFilter = "Text files: (*.txt)\0*.txt\0All files (*.*)\0*.*";
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = "txt";
-
-			if (GetOpenFileName(&ofn))
+			DoFileOpen(hwnd);
+		}
+		break;
+		case ID_FILE_SAVE:
+		{
+			if (szFileName[0])
 			{
-				LoadTextFileToEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
+				SaveTextFileFromEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
 			}
-			//----------------OPEN TXT FILE----------------// 
+			else
+			{
+				SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVEAS, 0);
+			}
 		}
 		break;
 		case ID_FILE_SAVEAS:
 		{
-			OPENFILENAME ofn;
-			CHAR szFileName[MAX_PATH]{};
-
-			ZeroMemory(&ofn, sizeof(ofn));
-
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hwnd;
-			ofn.lpstrFilter = "Text files: (*.text)\0*.txt\0All file: (*.*)\0*.*\0";
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
-			ofn.lpstrDefExt = "txt";
-
-			if (GetSaveFileName(&ofn))
-			{
-				HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
-				SaveTextFileFromEdit(hEdit,szFileName);
-			}
+			DoFileSaveAS(hwnd);
 		}
 		case ID_FILE_EXIT:
 		{
@@ -275,4 +258,51 @@ BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName)
 		CloseHandle(hFile);
 	}
 	return bSuccess;
+}
+
+VOID DoFileOpen(HWND hwnd)
+{
+	//----------------OPEN TXT FILE----------------// 
+	OPENFILENAME ofn;
+	//CHAR szFileName[MAX_PATH]{};
+
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFilter = "Text files: (*.txt)\0*.txt\0All files (*.*)\0*.*";
+	ofn.lpstrFile = szFileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = "txt";
+
+	if (GetOpenFileName(&ofn))
+	{
+		LoadTextFileToEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
+	}
+	//----------------OPEN TXT FILE----------------//
+}
+
+VOID DoFileSaveAS(HWND hwnd)
+{
+	//----------------SAVEAS----------------//
+	OPENFILENAME ofn;
+	//CHAR szFileName[MAX_PATH]{};
+
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFilter = "Text files: (*.text)\0*.txt\0All file: (*.*)\0*.*\0";
+	ofn.lpstrFile = szFileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+	ofn.lpstrDefExt = "txt";
+
+	if (GetSaveFileName(&ofn))
+	{
+		HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
+		SaveTextFileFromEdit(hEdit, szFileName);
+	}
+	//----------------SAVEAS----------------//
 }
