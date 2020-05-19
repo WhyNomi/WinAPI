@@ -321,17 +321,13 @@ BOOL FileChanged(HWND hEdit)
 	BOOL bFileWasChanged = FALSE;
 	DWORD dwCurrentTextLength = GetWindowTextLength(hEdit);
 	DWORD dwFileTextLength = lpszFileText ? strlen(lpszFileText) : 0;
-	if (dwCurrentTextLength || dwFileTextLength)
+	
+	if (dwCurrentTextLength || dwFileTextLength)return TRUE;
+	else
 	{
 		LPSTR lpszCurrentText = (LPSTR)GlobalAlloc(GPTR, dwCurrentTextLength + 1);
-		GetWindowText(hEdit, lpszCurrentText, dwCurrentTextLength + 1);
-
-		if (lpszFileText && strcmp(lpszCurrentText, lpszFileText))
-			bFileWasChanged = TRUE;
-
+		if (lpszFileText && strcmp(lpszFileText, lpszCurrentText)) bFileWasChanged = TRUE;
 		GlobalFree(lpszCurrentText);
 	}
-	else
-		bFileWasChanged = FALSE;
 	return bFileWasChanged;
 }
