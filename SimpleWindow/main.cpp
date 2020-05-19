@@ -4,10 +4,11 @@
 
 CONST CHAR SZ_CLASS_NAME[] = "MyWindowClass";
 CHAR szFileName[MAX_PATH]{};
+LPSTR lpszFileText = NULL;
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 
 BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName);
 BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName);
@@ -15,6 +16,7 @@ BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName);
 VOID DoFileOpen(HWND hwnd);
 VOID DoFileSaveAS(HWND hwnd);
 
+BOOL FileChanged(HWND hEdit);
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, int nCmdShow)
 {
 	//1) Регистация класса окна:
@@ -150,19 +152,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			case IDCANCEL:MessageBox(hwnd, "CANCEL", "Info", NULL); break;
 			}
 		}
+		break;
 		}
 		break;
 	}
-	case WM_CLOSE:
-		if (MessageBox(hwnd, "Вы действительно хотите закрыть окно?", "А шо так?", MB_YESNO | MB_ICONQUESTION) == IDYES)
+		case WM_CLOSE:
 		{
-			DestroyWindow(hwnd);
-		}
-		/*else
+			if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
 			{
-				MessageBox(hwnd,"Хорошо", "")
-			}*/
-		break;
+				switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
+				{
+				case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
+				case IDNO: DestroyWindow(hwnd);
+				case IDCANCEL: break;
+				}
+			}
+			else
+				DestroyWindow(hwnd);
+		}
+
 	case WM_DESTROY:
 		//MessageBox(hwnd, "Da", "Info", MB_OK);
 		PostQuitMessage(0);
@@ -208,7 +216,8 @@ BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName)
 		DWORD dwFileSize = GetFileSize(hFile, NULL);
 		if (dwFileSize != UINT_MAX)
 		{
-			LPSTR lpszFileText = (LPSTR)GlobalAlloc(GPTR, dwFileSize + 1);
+			lpszFileText = (LPSTR)GlobalAlloc(GPTR, dwFileSize + 1);
+
 			if (lpszFileText != NULL)
 			{
 				DWORD dwRead;
@@ -243,16 +252,16 @@ BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName)
 		DWORD dwTextlength = GetWindowTextLength(hEdit);
 		if (dwTextlength)
 		{
-			LPSTR lpszCurrentText = (LPSTR)GlobalAlloc(GPTR, dwTextlength + 1);
-			if (lpszCurrentText)
+			lpszFileText = (LPSTR)GlobalAlloc(GPTR, dwTextlength + 1);
+			if (lpszFileText)
 			{
-				if (GetWindowText(hEdit, lpszCurrentText, dwTextlength + 1))
+				if (GetWindowText(hEdit, lpszFileText, dwTextlength + 1))
 				{
 					DWORD dwWrite;
-					if (WriteFile(hFile, lpszCurrentText, dwTextlength, &dwWrite, NULL))
+					if (WriteFile(hFile, lpszFileText, dwTextlength, &dwWrite, NULL))
 						bSuccess = TRUE;
 				}
-				GlobalFree(lpszCurrentText);
+				GlobalFree(lpszFileText);
 			}
 		}
 		CloseHandle(hFile);
@@ -305,4 +314,24 @@ VOID DoFileSaveAS(HWND hwnd)
 		SaveTextFileFromEdit(hEdit, szFileName);
 	}
 	//----------------SAVEAS----------------//
+}
+
+BOOL FileChanged(HWND hEdit)
+{
+	BOOL bFileWasChanged = FALSE;
+	DWORD dwCurrentTextLength = GetWindowTextLength(hEdit);
+	DWORD dwFileTextLength = lpszFileText ? strlen(lpszFileText) : 0;
+	if (dwCurrentTextLength || dwFileTextLength)
+	{
+		LPSTR lpszCurrentText = (LPSTR)GlobalAlloc(GPTR, dwCurrentTextLength + 1);
+		GetWindowText(hEdit, lpszCurrentText, dwCurrentTextLength + 1);
+
+		if (lpszFileText && strcmp(lpszCurrentText, lpszFileText))
+			bFileWasChanged = TRUE;
+
+		GlobalFree(lpszCurrentText);
+	}
+	else
+		bFileWasChanged = FALSE;
+	return bFileWasChanged;
 }
