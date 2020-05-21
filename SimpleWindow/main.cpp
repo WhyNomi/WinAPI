@@ -17,6 +17,9 @@ VOID DoFileOpen(HWND hwnd);
 VOID DoFileSaveAS(HWND hwnd);
 
 BOOL FileChanged(HWND hEdit);
+VOID WatchChanges(HWND hwnd, void* Action);
+
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, int nCmdShow)
 {
 	//1) Регистация класса окна:
@@ -118,7 +121,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_FILE_OPEN:
 		{
-			DoFileOpen(hwnd);
+			/*if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
+			{
+				switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
+				{
+				case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
+				case IDNO: DestroyWindow(hwnd);
+				case IDCANCEL: break;
+				}
+			}
+			else
+				DestroyWindow(hwnd);*/
 		}
 		break;
 		case ID_FILE_SAVE:
@@ -331,3 +344,19 @@ BOOL FileChanged(HWND hEdit)
 	}
 	return bFileWasChanged;
 }
+
+//VOID WatchChanges(HWND hwnd, void* Action)
+//{
+//	if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
+//	{
+//		switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", 
+//			MB_YESNOCANCEL | MB_ICONQUESTION))
+//		{
+//		case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
+//		case IDNO: Action(hwnd);
+//		case IDCANCEL: break;
+//		}
+//	}
+//	else
+//		Action(hwnd);
+//}
