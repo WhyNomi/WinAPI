@@ -3,7 +3,6 @@
 #include"resource.h"
 
 
-CONST CHAR SZ_CLASS_NAME[] = "MyWindowClass";
 extern CHAR szFileName[MAX_PATH];
 extern LPSTR lpszFileText;
 

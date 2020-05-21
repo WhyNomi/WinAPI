@@ -15,6 +15,10 @@
 #define ID_FILE_EXIT                    40005
 #define ID_HELP_ABOUT                   40006
 
+#define IDC_TOOLBAR	40101
+#define IDC_STATUS 40102
+
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
