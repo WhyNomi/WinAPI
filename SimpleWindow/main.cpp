@@ -1,4 +1,4 @@
-#include<Windows.h>
+ï»¿#include<Windows.h>
 #include<CommCtrl.h>
 #include"resource.h"
 
@@ -11,9 +11,22 @@ LPSTR lpszFileText = NULL;
 //VOID WatchChanges(HWND hwnd, void* Action);
 
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, int nCmdShow)
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
-	//1) Ðåãèñòàöèÿ êëàññà îêíà:
+	//MessageBox(NULL, lpCmdLine, "Command cool", MB_OK | MB_ICONINFORMATION);
+	//MessageBox(NULL, , GetCommandLine(), "Command cool", MB_OK | MB_ICONINFORMATION);
+
+	if (lpCmdLine[0]) //ÐµÑÐ»Ð¸ ÐºÐ¾Ð¼Ð°Ð½Ð´Ð½Ð°Ñ ÑÑ‚Ñ€Ð¾ÐºÐ° Ð½Ðµ Ð¿ÑƒÑÑ‚Ð°
+	{
+		//Ñ‚Ð¾ Ñ‚Ð°Ð¼ Ð»ÐµÐ¶Ð¸Ñ‚ Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°, Ð¸ Ð¼Ñ‹ Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ ÐµÐ³Ð¾ Ð² Ð½Ð°ÑˆÐµ Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°:
+		//strcpy_s(szFileName, MAX_PATH, lpCmdLine);
+		for (int i = 0, j = 0; lpCmdLine[i]; i++)
+		{
+			if (lpCmdLine[i] != '\"')szFileName[j++] = lpCmdLine[i];
+		}
+	}
+
+	//1) Ð ÐµÐ³Ð¸ÑÑ‚Ð°Ñ†Ð¸Ñ ÐºÐ»Ð°ÑÑÐ° Ð¾ÐºÐ½Ð°:
 	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
@@ -34,7 +47,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, 
 		return 0;
 	}
 
-	//2) Ñîçäàíèå îêíà: 
+	//2) Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¾ÐºÐ½Ð°: 
 	HWND hwnd = CreateWindowEx
 	(
 		WS_EX_CLIENTEDGE,
@@ -53,7 +66,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLice, 
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	//3) Öèêë ñîîáùåíèé: (Message loop)
+	//3) Ð¦Ð¸ÐºÐ» ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ð¹: (Message loop)
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
 	{
@@ -91,6 +104,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		);
 		SetFocus(hEdit);
 
+		if (szFileName[0])
+		{
+			LoadTextFileToEdit(hEdit, szFileName);
+		}
 
 		//////////////////////////////////////////////////////////////////////////////////
 		HWND hTool = CreateWindowEx
@@ -110,20 +127,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		ZeroMemory(tbb, sizeof(tbb));
 
-		tbb[0].iBitmap = STD_FILENEW;
-		tbb[0].fsState = TBSTATE_ENABLED;
-		tbb[0].fsStyle = TBSTYLE_BUTTON;
-		tbb[0].idCommand = ID_FILE_NEW;
+		//tbb[0].iBitmap = STD_FILENEW;
+		//tbb[0].fsState = TBSTATE_ENABLED;
+		//tbb[0].fsStyle = TBSTYLE_BUTTON;
+		//tbb[0].idCommand = ID_FILE_NEW;
 
-		tbb[1].iBitmap = STD_FILEOPEN;
-		tbb[1].fsState = TBSTATE_ENABLED;
-		tbb[1].fsStyle = TBSTYLE_BUTTON;
-		tbb[1].idCommand = ID_FILE_OPEN;
+		//tbb[1].iBitmap = STD_FILEOPEN;
+		//tbb[1].fsState = TBSTATE_ENABLED;
+		//tbb[1].fsStyle = TBSTYLE_BUTTON;
+		//tbb[1].idCommand = ID_FILE_OPEN;
 
-		tbb[2].iBitmap = STD_FILESAVE;
-		tbb[2].fsState = TBSTATE_ENABLED;
-		tbb[2].fsStyle = TBSTYLE_BUTTON;
-		tbb[2].idCommand = ID_FILE_SAVE;
+		//tbb[2].iBitmap = STD_FILESAVE;
+		//tbb[2].fsState = TBSTATE_ENABLED;
+		//tbb[2].fsStyle = TBSTYLE_BUTTON;
+		//tbb[2].idCommand = ID_FILE_SAVE;
+
+		for (int i = 0; i < sizeof(tbb) / sizeof(TBBUTTON);i++)
+		{
+			tbb[i].iBitmap = STD_FILENEW + i;
+			tbb[i].fsState = TBSTATE_ENABLED;
+			tbb[i].fsStyle = TBSTYLE_BUTTON;
+			tbb[i].idCommand = ID_FILE_NEW+i;
+		}
 
 		SendMessage(hTool, TB_ADDBUTTONS, sizeof(tbb) / sizeof(TBBUTTON), (LPARAM)&tbb);
 		//////////////////////////////////////////////////////////////////////////////////
@@ -136,9 +161,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			hwnd, (HMENU)IDC_STATUS,GetModuleHandle(NULL), NULL
 			
 		);
-		int  statwidth[] = { 100,300, -1 };
+
+	
+		int  statwidth[] = { 500,800, -1 };
 		SendMessage(hStatus, SB_SETPARTS, sizeof(statwidth) / sizeof(int), (LPARAM)statwidth);
-		SendMessage(hStatus, SB_SETTEXT, 0, (LPARAM)"Chiza");
+		SendMessage(hStatus, SB_SETTEXT, 0, (LPARAM)(szFileName[0]?szFileName:"Not found"));
 		//////////////////////////////////////////////////////////////////////////////////
 		
 	}
@@ -156,21 +183,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetWindowPos(GetDlgItem(hwnd, IDC_EDIT), NULL, 0, 0, rcClient.right, rcClient.bottom, SWP_NOZORDER);*/
 		
 		//////////////////////////////////////////////////////////////////////////////////
-					//ÂÛÑÎÒÀ ÏÀÍÅËÈ ÈÍÑÒÐÓÌÅÍÒÎÂ...
+					//Ð’Ð«Ð¡ÐžÐ¢Ð ÐŸÐÐÐ•Ð›Ð˜ Ð˜ÐÐ¡Ð¢Ð Ð£ÐœÐ•ÐÐ¢ÐžÐ’...
 		HWND hTool = GetDlgItem(hwnd, IDC_TOOLBAR);
 		SendMessage(hTool, TB_AUTOSIZE, 0, 0);
 		RECT rcTool;
 		GetWindowRect(hTool, &rcTool);
 		int iToolbarHeight = rcTool.bottom - rcTool.top;
 
-					//ÂÛÑÎÒÀ ÑÒÐÎÊÈ ÑÎÑÒÎßÍÈß...
+					//Ð’Ð«Ð¡ÐžÐ¢Ð Ð¡Ð¢Ð ÐžÐšÐ˜ Ð¡ÐžÐ¡Ð¢ÐžÐ¯ÐÐ˜Ð¯...
 		HWND hStatus = GetDlgItem(hwnd, IDC_STATUS);
 		SendMessage(hStatus, WM_SIZE, 0, 0);
 		RECT rcStatus;
 		GetWindowRect(hStatus, &rcStatus);
 		int iStatusHeight = rcStatus.bottom - rcStatus.top;
 
-					//ÐÀÇÌÅÐ ÏÎËß ÄËß ÂÂÎÄÀ...
+					//Ð ÐÐ—ÐœÐ•Ð  ÐŸÐžÐ›Ð¯ Ð”Ð›Ð¯ Ð’Ð’ÐžÐ”Ð...
 		HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 		RECT rcClient;
 		GetClientRect(hwnd, &rcClient);
@@ -288,6 +315,21 @@ LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		return FALSE;
 	}
 	return TRUE;
+}
+
+VOID SetFileNameToStatusBar(HWND hEdit)
+{
+	LPSTR szNameOnly = strrchr(szFileName, '\\') + 1;
+	CHAR szTitle[MAX_PATH] = "SimpleWindowEditor";
+
+	strcat_s(szTitle, MAX_PATH, " <-> ");
+	strcat_s(szTitle, MAX_PATH, szNameOnly);
+
+
+	HWND hwparent = GetParent(hEdit);
+	SetWindowText(hwparent, szTitle);
+	HWND hStatus = GetDlgItem(hwparent, IDC_STATUS);
+	SendMessage(hStatus, WM_SETTEXT, 0, (LPARAM)szFileName);
 }
 
 //VOID WatchChanges(HWND hwnd, void* Action)

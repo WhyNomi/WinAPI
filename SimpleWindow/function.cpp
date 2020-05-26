@@ -1,7 +1,5 @@
 #include"function.h"
 
-
-
 BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName)
 {
 	BOOL bSuccess = FALSE;
@@ -12,16 +10,19 @@ BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName)
 		if (dwFileSize != UINT_MAX)
 		{
 			lpszFileText = (LPSTR)GlobalAlloc(GPTR, dwFileSize + 1);
-
+			ZeroMemory(lpszFileText, dwFileSize + 1);
 			if (lpszFileText != NULL)
 			{
 				DWORD dwRead;
 				if (ReadFile(hFile, lpszFileText, dwFileSize, &dwRead, NULL))
 				{
 					if (SetWindowText(hEdit, lpszFileText))
+					{
 						bSuccess = TRUE;
+						SetFileNameToStatusBar(hEdit);
+					}
 				}
-				GlobalFree(lpszFileText);
+				//GlobalFree(lpszFileText);
 			}
 		}
 		CloseHandle(hFile);
@@ -126,3 +127,6 @@ BOOL FileChanged(HWND hEdit)
 	}
 	return bFileWasChanged;
 }
+
+
+
