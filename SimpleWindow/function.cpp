@@ -84,7 +84,7 @@ BOOL __stdcall DoFileOpen(HWND hwnd)
 	if (GetOpenFileName(&ofn))
 	{
 		LoadTextFileToEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
-		return TRUE;
+		//return TRUE;
 	}
 	//----------------OPEN TXT FILE----------------//
 
@@ -132,5 +132,20 @@ BOOL FileChanged(HWND hEdit)
 	return bFileWasChanged;
 }
 
-
+VOID WatchChanges(HWND hwnd, BOOL(__stdcall*Action)(HWND))
+{
+	if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
+	{
+		switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
+		{
+		case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
+		case IDNO: Action(hwnd);
+		case IDCANCEL: break;
+		}
+	}
+	else
+	{
+		Action(hwnd);
+	}
+}
 

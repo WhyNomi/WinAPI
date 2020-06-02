@@ -167,7 +167,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendMessage(hStatus, SB_SETPARTS, sizeof(statwidth) / sizeof(int), (LPARAM)statwidth);
 		SendMessage(hStatus, SB_SETTEXT, 0, (LPARAM)(szFileName[0]?szFileName:"Not found"));
 		//////////////////////////////////////////////////////////////////////////////////
-		
+
+
+		/////////////////////////////////////////////////////////////////////////////////
+		///////////////////////    HOTKEY    ////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////
+
+		RegisterHotKey(hwnd, HOTKEY_NEW, MOD_CONTROL,'N');
+		RegisterHotKey(hwnd, HOTKEY_OPEN, MOD_CONTROL,'O');
+		RegisterHotKey(hwnd, HOTKEY_SAVE, MOD_CONTROL,'S');
+		RegisterHotKey(hwnd, HOTKEY_SAVEAS, MOD_CONTROL+MOD_ALT,'S');
+		RegisterHotKey(hwnd, HOTKEY_ABOUT, 0, VK_F1);
+
+		/////////////////////////////////////////////////////////////////////////////////
+
 	}
 
 	/*case WM_INITDIALOG:
@@ -214,6 +227,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		DragFinish(hDrop);
 	}
 	break;
+	case WM_HOTKEY:
+		switch (wParam)
+		{
+		case HOTKEY_NEW:	SendMessage(hwnd, WM_COMMAND, ID_FILE_NEW, 0);		break;
+		case HOTKEY_OPEN:	SendMessage(hwnd, WM_COMMAND, ID_FILE_OPEN, 0);		break;
+		case HOTKEY_SAVE:	SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);		break;
+		case HOTKEY_SAVEAS: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVEAS, 0);	break;
+		case HOTKEY_ABOUT:  SendMessage(hwnd, WM_COMMAND, ID_HELP_ABOUT, 0);	break;
+		
+		}
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
@@ -221,12 +244,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
 			{
-				//	switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
-				//	{
-				//	case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
-				//	case IDNO: DoFileOpen(hwnd);
-				//	case IDCANCEL: break;
-				//  }
+				
 				WatchChanges(hwnd, DoFileOpen);
 			}
 			else
@@ -235,18 +253,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
-		//case ID_FILE_SAVE:
-		//{
-		//	if (szFileName[0])
-		//	{
-		//		SaveTextFileFromEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
-		//	}
-		//	else
-		//	{
-		//		SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVEAS, 0);
-		//	}
-		//}
-		//break;
+		case ID_FILE_SAVE:
+		{
+			if (szFileName[0])
+			{
+				SaveTextFileFromEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
+			}
+			else
+			{
+				SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVEAS, 0);
+			}
+		}
+		break;
 		case ID_FILE_SAVEAS:
 		{
 			DoFileSaveAS(hwnd);
@@ -273,12 +291,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
 		{
-			/*switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
-			{
-			case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
-			case IDNO: DestroyWindow(hwnd);
-			case IDCANCEL: break;
-			}*/
+			
 			WatchChanges(hwnd, DestroyWindow);
 		}
 		else
@@ -335,6 +348,8 @@ VOID SetFileNameToStatusBar(HWND hEdit)
 	HWND hStatus = GetDlgItem(hwparent, IDC_STATUS);
 	SendMessage(hStatus, WM_SETTEXT, 0, (LPARAM)szFileName);
 }
+
+
 
 //VOID WatchChanges(HWND hwnd, void* Action)
 //{

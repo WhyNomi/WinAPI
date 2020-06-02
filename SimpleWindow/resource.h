@@ -8,12 +8,20 @@
 
 #define IDC_EDIT 105
 
+#define HOTKEY_NEW				201
+#define HOTKEY_OPEN				202
+#define HOTKEY_SAVE				203
+#define HOTKEY_SAVEAS			204
+#define HOTKEY_ABOUT			205
+
 #define ID_FILE_NEW                     40001
 #define ID_FILE_OPEN                    40002
 #define ID_FILE_SAVE                    40003
 #define ID_FILE_SAVEAS                  40004
 #define ID_FILE_EXIT                    40005
-#define ID_HELP_ABOUT                   40006
+#define ID_NEW_DOC						40006
+#define ID_HELP_ABOUT                   40007
+
 
 #define IDC_TOOLBAR	40101
 #define IDC_STATUS 40102

@@ -17,19 +17,4 @@ VOID DoFileSaveAS(HWND hwnd);
 VOID SetFileNameToStatusBar(HWND hEdit);
 BOOL FileChanged(HWND hEdit);
 
-VOID WatchChanges(HWND hwnd, BOOL(__stdcall*Action)(HWND))
-{
-	if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
-	{
-		switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
-		{
-		case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
-		case IDNO: Action(hwnd);
-		case IDCANCEL: break;
-		}
-	}
-	else
-	{
-		Action(hwnd);
-	}
-}
+VOID WatchChanges(HWND hwnd, BOOL(__stdcall*Action)(HWND));
