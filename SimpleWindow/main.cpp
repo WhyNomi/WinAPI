@@ -180,6 +180,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		RegisterHotKey(hwnd, HOTKEY_ABOUT, 0, VK_F1);
 
 		/////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////    FONTS    //////////////////////////////////////////
+
+		HDC hdc = GetDC(NULL);
+		long lfHeight = -MulDiv(22, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+		ReleaseDC(NULL, hdc);
+
+		HFONT hf = CreateFont(
+			lfHeight,
+			0, 0, 0, 0,
+			TRUE, TRUE, TRUE, 
+			0, 0, 0, 0, 0,
+			"Times New Roman"
+		);
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)hf, 0);
+		/////////////////////////////////////////////////////////////////////////////////
 
 	}
 
