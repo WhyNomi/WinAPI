@@ -65,7 +65,7 @@ BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName)
 	return bSuccess;
 }
 
-VOID DoFileOpen(HWND hwnd)
+BOOL __stdcall DoFileOpen(HWND hwnd)
 {
 	//----------------OPEN TXT FILE----------------// 
 	OPENFILENAME ofn;
@@ -84,8 +84,11 @@ VOID DoFileOpen(HWND hwnd)
 	if (GetOpenFileName(&ofn))
 	{
 		LoadTextFileToEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
+		return TRUE;
 	}
 	//----------------OPEN TXT FILE----------------//
+
+	return FALSE;
 }
 
 VOID DoFileSaveAS(HWND hwnd)
@@ -108,6 +111,7 @@ VOID DoFileSaveAS(HWND hwnd)
 	{
 		HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 		SaveTextFileFromEdit(hEdit, szFileName);
+
 	}
 	//----------------SAVEAS----------------//
 }

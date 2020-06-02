@@ -11,9 +11,25 @@ LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName);
 BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName);
 
-VOID DoFileOpen(HWND hwnd);
+BOOL __stdcall DoFileOpen(HWND hwnd);
 VOID DoFileSaveAS(HWND hwnd);
+
 VOID SetFileNameToStatusBar(HWND hEdit);
-
-
 BOOL FileChanged(HWND hEdit);
+
+VOID WatchChanges(HWND hwnd, BOOL(__stdcall*Action)(HWND))
+{
+	if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
+	{
+		switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
+		{
+		case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
+		case IDNO: Action(hwnd);
+		case IDCANCEL: break;
+		}
+	}
+	else
+	{
+		Action(hwnd);
+	}
+}

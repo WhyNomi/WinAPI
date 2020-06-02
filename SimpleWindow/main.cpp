@@ -50,7 +50,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	//2) Создание окна: 
 	HWND hwnd = CreateWindowEx
 	(
-		WS_EX_CLIENTEDGE,
+		WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
 		SZ_CLASS_NAME,
 		"THIS IS MY FIRST WINDOW",
 		WS_OVERLAPPEDWINDOW,
@@ -204,42 +204,49 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int iEditHeight = rcClient.bottom - iToolbarHeight - iStatusHeight;
 		SetWindowPos(hEdit, NULL, 0, iToolbarHeight, rcClient.right, iEditHeight,SWP_NOZORDER);
 		//////////////////////////////////////////////////////////////////////////////////
-
+	}
+	break;
+	case WM_DROPFILES:
+	{
+		HDROP hDrop = (HDROP)wParam;
+		DragQueryFile(hDrop, 0, szFileName, MAX_PATH);
+		LoadTextFileToEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
+		DragFinish(hDrop);
 	}
 	break;
 	case WM_COMMAND:
-	{
 		switch (LOWORD(wParam))
 		{
 		case ID_FILE_OPEN:
 		{
 			if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
 			{
-				switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
-				{
-				case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
-				case IDNO: DoFileOpen(hwnd);
-				case IDCANCEL: break;
-				}
+				//	switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
+				//	{
+				//	case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
+				//	case IDNO: DoFileOpen(hwnd);
+				//	case IDCANCEL: break;
+				//  }
+				WatchChanges(hwnd, DoFileOpen);
 			}
 			else
 			{
-				DoFileOpen(hwnd);
+			DoFileOpen(hwnd);
 			}
 		}
 		break;
-		case ID_FILE_SAVE:
-		{
-			if (szFileName[0])
-			{
-				SaveTextFileFromEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
-			}
-			else
-			{
-				SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVEAS, 0);
-			}
-		}
-		break;
+		//case ID_FILE_SAVE:
+		//{
+		//	if (szFileName[0])
+		//	{
+		//		SaveTextFileFromEdit(GetDlgItem(hwnd, IDC_EDIT), szFileName);
+		//	}
+		//	else
+		//	{
+		//		SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVEAS, 0);
+		//	}
+		//}
+		//break;
 		case ID_FILE_SAVEAS:
 		{
 			DoFileSaveAS(hwnd);
@@ -262,18 +269,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 		}
 		break;
-	}
 	case WM_CLOSE:
 	{
 		if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
 		{
-			switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
+			/*switch (MessageBox(hwnd, "Save changed in file?", "Confirmation", MB_YESNOCANCEL | MB_ICONQUESTION))
 			{
 			case IDYES: SendMessage(hwnd, WM_COMMAND, ID_FILE_SAVE, 0);
-
 			case IDNO: DestroyWindow(hwnd);
 			case IDCANCEL: break;
-			}
+			}*/
+			WatchChanges(hwnd, DestroyWindow);
 		}
 		else
 			DestroyWindow(hwnd);
@@ -288,8 +294,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
-
-
 
 LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
