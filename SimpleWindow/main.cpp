@@ -181,17 +181,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		/////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////    FONTS    //////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////
 
 		HDC hdc = GetDC(NULL);
-		long lfHeight = -MulDiv(22, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+		long lfHeight = -MulDiv(14, GetDeviceCaps(hdc, LOGPIXELSY), 72);
 		ReleaseDC(NULL, hdc);
 
 		HFONT hf = CreateFont(
 			lfHeight,
 			0, 0, 0, 0,
-			TRUE, TRUE, TRUE, 
+			TRUE, 0, 0, 
 			0, 0, 0, 0, 0,
-			"Times New Roman"
+			//"Times New Roman"
+			"Malgun Gothic"
 		);
 		SendMessage(hEdit, WM_SETFONT, (WPARAM)hf, 0);
 		/////////////////////////////////////////////////////////////////////////////////
