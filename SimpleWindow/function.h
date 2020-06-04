@@ -11,6 +11,7 @@ LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName);
 BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName);
 
+BOOL DoFileNew(HWND hwnd);
 BOOL __stdcall DoFileOpen(HWND hwnd);
 VOID DoFileSaveAS(HWND hwnd);
 

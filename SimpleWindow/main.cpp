@@ -257,11 +257,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case ID_FILE_NEW:
+		{
+			DoFileNew(hwnd);
+		}
+		break;
 		case ID_FILE_OPEN:
 		{
 			if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
 			{
-				
 				WatchChanges(hwnd, DoFileOpen);
 			}
 			else
@@ -353,17 +357,32 @@ LRESULT CALLBACK AboutDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 VOID SetFileNameToStatusBar(HWND hEdit)
 {
-	LPSTR szNameOnly = strrchr(szFileName, '\\') + 1;
+
+
 	CHAR szTitle[MAX_PATH] = "SimpleWindowEditor";
+
+	if (szFileName[0])
+	{
+	LPSTR szNameOnly = strrchr(szFileName, '\\') + 1;
 
 	strcat_s(szTitle, MAX_PATH, " <-> ");
 	strcat_s(szTitle, MAX_PATH, szNameOnly);
 
+	}
 
 	HWND hwparent = GetParent(hEdit);
-	SetWindowText(hwparent, szTitle);
+//	SetWindowText(hwparent, szTitle);
+	SendMessage(hwparent, WM_SETTEXT, MAX_PATH, (LPARAM)szTitle);
 	HWND hStatus = GetDlgItem(hwparent, IDC_STATUS);
+	SendMessage(hStatus, WM_CLEAR, 0, (LPARAM)"");
 	SendMessage(hStatus, WM_SETTEXT, 0, (LPARAM)szFileName);
+	
+
+	/*else
+	{
+		HWND hwndParent = GetParent(hEdit);
+		SetWindowText(hwndParent, "Simple WindowEditro");
+	}*/
 }
 
 

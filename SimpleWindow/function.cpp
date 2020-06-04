@@ -65,6 +65,22 @@ BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName)
 	return bSuccess;
 }
 
+BOOL DoFileNew(HWND hwnd)
+{
+	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
+
+	SetWindowText(hEdit, "");
+	ZeroMemory(szFileName, sizeof(szFileName));
+	
+	if (lpszFileText) 
+	{
+		GlobalFree(lpszFileText);
+		lpszFileText = NULL;
+	}
+	SetFileNameToStatusBar(GetDlgItem(hwnd, IDC_EDIT));
+		return TRUE;
+}
+
 BOOL __stdcall DoFileOpen(HWND hwnd)
 {
 	//----------------OPEN TXT FILE----------------// 
