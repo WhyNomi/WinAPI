@@ -65,7 +65,7 @@ BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR lpszFileName)
 	return bSuccess;
 }
 
-BOOL DoFileNew(HWND hwnd)
+BOOL __stdcall DoFileNew(HWND hwnd)
 {
 	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 

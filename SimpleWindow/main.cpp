@@ -259,7 +259,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_FILE_NEW:
 		{
-			DoFileNew(hwnd);
+			if (FileChanged(GetDlgItem(hwnd, IDC_EDIT)))
+			{
+				WatchChanges(hwnd, DoFileNew);
+			}
+			else
+			 DoFileNew(hwnd);
 		}
 		break;
 		case ID_FILE_OPEN:
