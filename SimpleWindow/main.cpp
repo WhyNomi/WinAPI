@@ -8,6 +8,7 @@ CONST CHAR SZ_CLASS_NAME[] = "MyWindowClass";
 
 CHAR szFileName[MAX_PATH]{};
 LPSTR lpszFileText = NULL;
+
 //VOID WatchChanges(HWND hwnd, void* Action);
 
 
@@ -84,6 +85,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		HICON hIcon = (HICON)LoadImage(NULL, "wood.ico", IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
 		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+
 
 		////////////////////////////////////////
 
@@ -190,7 +192,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HFONT hf = CreateFont(
 			lfHeight,
 			0, 0, 0, 0,
-			TRUE, 0, 0, 
+			0, 0, 0, 
 			0, 0, 0, 0, 0,
 			//"Times New Roman"
 			"Malgun Gothic"
@@ -298,6 +300,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case ID_FILE_EXIT:
 		{
 			DestroyWindow(hwnd);
+			break;
+		}
+		case ID_FORMAT_FONT:
+		{
+			DoSelectFont(hwnd);
 			break;
 		}
 		///////////////////////////////////

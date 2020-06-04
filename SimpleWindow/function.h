@@ -19,3 +19,4 @@ VOID SetFileNameToStatusBar(HWND hEdit);
 BOOL FileChanged(HWND hEdit);
 
 VOID WatchChanges(HWND hwnd, BOOL(__stdcall*Action)(HWND));
+VOID DoSelectFont(HWND hwnd);

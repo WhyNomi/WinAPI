@@ -1,5 +1,8 @@
 #include"function.h"
 
+HFONT g_hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+COLORREF g_rgbText = RGB(0, 0, 0);
+
 BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR lpszFileName)
 {
 	BOOL bSuccess = FALSE;
@@ -147,6 +150,36 @@ BOOL FileChanged(HWND hEdit)
 	}
 	return bFileWasChanged;
 }
+
+VOID DoSelectFont(HWND hwnd)
+{
+	CHOOSEFONT cf = { sizeof(CHOOSEFONT) };
+	LOGFONT lf;
+
+	GetObject(g_hFont, sizeof(LOGFONT), &lf);
+	
+	cf.Flags = CF_APPLY | CF_EFFECTS | CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
+	cf.hwndOwner = hwnd;
+	cf.lpLogFont = &lf;
+	cf.rgbColors = g_rgbText;
+
+	if (ChooseFont(&cf))
+	{
+		HFONT hf = CreateFontIndirect(&lf);
+		if (hf)
+		{
+			g_hFont = hf;
+		}
+		else
+		{
+			MessageBox(hwnd, "Font creation failed!", "Error", MB_OK | MB_ICONERROR);
+		}
+		g_rgbText = cf.rgbColors;
+	}
+	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
+	SendMessage(hEdit, WM_SETFONT, (WPARAM)g_hFont, MAKELPARAM(TRUE, 0));
+}
+
 
 VOID WatchChanges(HWND hwnd, BOOL(__stdcall*Action)(HWND))
 {
