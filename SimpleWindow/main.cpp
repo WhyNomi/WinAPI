@@ -8,6 +8,7 @@ CONST CHAR SZ_CLASS_NAME[] = "MyWindowClass";
 
 CHAR szFileName[MAX_PATH]{};
 LPSTR lpszFileText = NULL;
+COLORREF g_rgbText1 = RGB(15, 30, 200);
 
 //VOID WatchChanges(HWND hwnd, void* Action);
 
@@ -236,6 +237,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int iEditHeight = rcClient.bottom - iToolbarHeight - iStatusHeight;
 		SetWindowPos(hEdit, NULL, 0, iToolbarHeight, rcClient.right, iEditHeight,SWP_NOZORDER);
 		//////////////////////////////////////////////////////////////////////////////////
+	}
+	break;
+	case WM_CTLCOLOREDIT:
+	{
+		
+		//SetBkMode(hdc, TRANSPARENT);
+		//SetBkColor(hdc, RGB(200, 0, 100));
+		//HBRUSH hBrush = CreateSolidBrush(wParam);
+		SetTextColor((HDC)wParam, g_rgbText1);
+
+		return 0;
 	}
 	break;
 	case WM_DROPFILES:

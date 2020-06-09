@@ -130,7 +130,6 @@ VOID DoFileSaveAS(HWND hwnd)
 	{
 		HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 		SaveTextFileFromEdit(hEdit, szFileName);
-
 	}
 	//----------------SAVEAS----------------//
 }
@@ -178,6 +177,7 @@ VOID DoSelectFont(HWND hwnd)
 	}
 	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 	SendMessage(hEdit, WM_SETFONT, (WPARAM)g_hFont, MAKELPARAM(TRUE, 0));
+	SendMessage(GetDlgItem(hwnd, IDC_EDIT), WM_CTLCOLOREDIT, g_rgbText, IDC_EDIT);
 }
 
 
